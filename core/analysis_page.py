@@ -20,6 +20,6 @@ class Analysis():
                 real_url = urljoin(base_url, i.get_attribute("href"))
                 if is_same_netloc(self.base_target,real_url):
                     self.queue.put(real_url)
-                    print("队列添加：{}".format(real_url))
+                    # print("队列添加：{}".format(real_url))
         except Exception as e:
             print(e)

@@ -10,10 +10,10 @@ class MunDoBase():
     蒙多爬虫基类
     """
 
-    def __init__(self, entrypoint):
+    def __init__(self, entrypoints):
         # 设置入口url
-        self.entrypoint = entrypoint
-        self.base_target = urlparse(self.entrypoint).netloc
+        self.entrypoints = entrypoints
+        self.base_target = urlparse(self.entrypoints[0]).netloc
         self.listener = Listener(self.base_target)
         # 初始化队列信息
         # 设置缓存区
