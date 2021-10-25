@@ -8,7 +8,6 @@ queue = asyncio.Queue()
 cache = []
 read_cache = []
 
-
 def log_response(page, intercepted_response):
     if intercepted_response.request.url in read_cache:
         return
