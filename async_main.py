@@ -4,9 +4,9 @@ from urllib.parse import urljoin, urlparse
 
 from playwright.async_api import async_playwright
 
-queue = asyncio.Queue()
 cache = []
 read_cache = []
+
 
 def log_response(page, intercepted_response):
     if intercepted_response.request.url in read_cache:
@@ -45,30 +45,26 @@ async def need_crawler(url):
     return True
 
 
-async def analysis_a(base_url, page):
+async def analysis_a(base_url, page, context):
     try:
         a = await page.query_selector_all("a")
         for i in a:
             real_url = urljoin(base_url, await i.get_attribute("href"))
             if await is_same_netloc(base_url, real_url):
                 # print("add :{}".format(real_url))
-                await queue.put(real_url)
+                asyncio.ensure_future(start(context, real_url))
     except Exception as e:
         print(e)
 
 
 async def start(context, url=None):
-    if url:
-        url = url
-    else:
-        url = await queue.get()
     if not await need_crawler(url):
         return
     page = await context.new_page()
     page.on("response", partial(log_response, page))
     await page.goto(url)
-    await analysis_a(url, page)
-    await page.close()
+    await analysis_a(url, page, context)
+    # await page.close()
 
 
 async def run(playwright):
@@ -83,11 +79,8 @@ async def run(playwright):
     context.set_default_timeout(30000)  # 页面加载等待时间
 
     base_url = "http://testphp.vulnweb.com/"
-    await queue.put(base_url)
     await start(context, base_url)
-    while queue.qsize() != 0:
-        await start(context)
-
+    print("爬取结束")
     # other actions...
     await browser.close()
 
