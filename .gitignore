@@ -141,3 +141,5 @@ cython_debug/
 test.py
 .idea
 bin/Chromium.app/
+.DS_Store
+.python-version
