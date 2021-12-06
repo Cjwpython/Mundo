@@ -2,42 +2,42 @@
 from functools import partial
 from urllib.parse import urlparse
 
+from core.repeat import RepeatHandler
+
 
 class RouteHandler():
-    def add_route(self, page, base_url):
-        page.route("**/*", partial(self.handle, base_url))
-
-    def handle(self, base_url, route, request):
-        request_url = request.url
-        if not self.is_homelogy(request_url):
-            route.abort("aborted")
-            print("拒绝非同源的请求")
-            return
-
-        if request.is_navigation_request():
-            print("页面发生重定向")
-            print(request_url)
-            route.abort("aborted")
-            self.task_queue.put_nowait((request_url, request))
-            return
-        print(request.method)
-        print(request.url)
-        print(request.headers)
-
-        route.continue_()
-
     def is_homelogy(self, url):
         url_netloc = urlparse(url).netloc
         if url_netloc != self.base_target:
             return False
         return True
 
-    def other_handler(self, route, request):
-        headers = {
-            **request.headers}
-        postData = request.post_data
-        method = request.method
-        print(method)
-        print(123)
-        print(headers)
-        route.continue_(headers=headers, postData=postData, method=method)
+    def common_route(self, page):
+        page.route("**/*", partial(self.common_handle))
+
+    def common_handle(self, route, request):
+        request_url = request.url
+        if request.is_navigation_request():
+            # print("页面发生重定向")
+            # print(request_url)
+            route.abort("aborted")
+            if not self.is_homelogy(request_url):
+                return
+            self.task_queue.put_nowait((request_url, request))
+            return
+        route.continue_()
+
+    def homelogy_route(self, page):
+        page.route("**/*", partial(self.homelogy_handle))
+
+    def homelogy_handle(self, route, request):
+        request_url = request.url
+        if RepeatHandler.in_cache(request_url):
+            print("去除重复的请求")
+            route.abort("aborted")
+            return
+        if not self.is_homelogy(request_url):
+            route.abort("aborted")
+            # print(f"拒绝非同源的请求：{request.method} {request_url}")
+            return
+        route.continue_()
