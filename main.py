@@ -40,9 +40,12 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
 
     def run(self):
         while True:
-            print("------ 新的页面 -------")
             try:
                 url, request = self.task_queue.get_nowait()
+                if url in RepeatHandler.request_cache:
+                    print("去重")
+                    continue
+                print("------ 新的页面 -------")
                 page = self.new_page()
                 self.add_listener(page)
                 self.homelogy_route(page)  # 拒绝非同源的请求
@@ -55,17 +58,19 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
             except Exception as e:
                 self.close_page(page)
             except KeyboardInterrupt as e:
-                for url in RepeatHandler.cache:
+                for url in RepeatHandler.request_cache:
                     print(url)
 
         self.context.close()
         self.browser.close()
         self.playwright.stop()
         print("爬取结束")
+        for url in RepeatHandler.request_cache:
+            print(url)
 
 
 if __name__ == '__main__':
     mundo = Mundo()
-    url = "http://bh4ars.riskivy.xyz"
+    url = "http://bh4ars.riskivy.xyz/"
     mundo.add_target(url)
     mundo.run()

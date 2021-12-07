@@ -39,7 +39,7 @@ class ListerHandler():
         print(f"响应结束:{url},响应状态码:{status_code}")
 
         # 当请求结束，这个url已经处理完成
-        RepeatHandler.add_cache(url)
+        RepeatHandler.request_add(url)
 
     def intercepted_popup(self, page, intercepted_fream):
         url = intercepted_fream.url

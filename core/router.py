@@ -32,7 +32,7 @@ class RouteHandler():
 
     def homelogy_handle(self, route, request):
         request_url = request.url
-        if RepeatHandler.in_cache(request_url):
+        if RepeatHandler.request_in(request_url):
             print("去除重复的请求")
             route.abort("aborted")
             return

@@ -1,6 +1,8 @@
 # coding: utf-8
 import time
 
+from core.repeat import RepeatHandler
+
 
 class ElementHandler():
     def analyze(self, page):
@@ -20,11 +22,17 @@ class ElementHandler():
             if not a.is_visible():
                 # print(f"元素不可见:{text}")
                 continue
-            if text:
-                # print(f"开始点击:{text}")
-                a.hover()
-                # time.sleep(1)
-                a.click()
+            if not text:
+                continue
+
+            if RepeatHandler.click_in(page, text):
+                print(f"跳过点击过的元素:{text}")
+                continue
+            print(f"开始点击:{text}")
+            a.hover()
+            # time.sleep(1)
+            a.click()
+            RepeatHandler.click_add(page,text)
 
     def analyze_input(self, page):
         all_input = page.query_selector_all("input")
