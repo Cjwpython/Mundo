@@ -16,5 +16,19 @@ context_configs = {
 context_default_timeout = 3000
 
 context_init_js = [
-    "'Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});'"
+    "'Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});'",
+]
+
+page_init_js = [
+    """
+    const list = document.querySelectorAll('*')
+list.forEach(item => {
+  if (item.getAttribute('style')) {
+    if (item.getAttribute('style').includes('position')) {
+      item.style.left = '1px'
+      item.style.top = '1px'
+    }
+  }
+})
+    """
 ]
