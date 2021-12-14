@@ -2,6 +2,9 @@
 import time
 from element.a import handle_a
 from element.input import Inputer
+from utils.log import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class ElementHandler():
@@ -9,9 +12,9 @@ class ElementHandler():
         """
         解析元素
         """
-        print("开始解析input标签")
+        logger.debug("开始解析input标签")
         self.analyze_input(page)
-        print("开始解析a标签")
+        logger.debug("开始解析a标签")
         self.analyze_a(page)
 
     def analyze_a(self, page):

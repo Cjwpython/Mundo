@@ -3,7 +3,9 @@ from functools import partial
 from urllib.parse import urlparse
 
 import time
+from utils.log import setup_logger
 
+logger = setup_logger(__name__)
 from core.repeat import RepeatHandler
 
 
@@ -20,11 +22,12 @@ class RouteHandler():
     def common_handle(self, route, request):
         request_url = request.url
         if request.is_navigation_request():
-            print(f"页面发生重定向:{request_url}")
+            logger.debug(f"请求将会在新的页面打开:{request_url}:{request.method}")
             route.abort("aborted")
             if not self.is_homelogy(request_url):
-                print(f"丢弃非同源的url:{request_url}")
+                logger.debug(f"丢弃非同源的url:{request_url}")
                 return
+            logger.info("放入队列中")
             self.task_queue.put_nowait((request_url, request))
             return
         route.continue_()
@@ -35,7 +38,7 @@ class RouteHandler():
     def homelogy_handle(self, route, request):
         request_url = request.url
         if RepeatHandler.request_in(request_url, request.method):
-            print("去除重复的请求")
+            logger.debug("去除重复的请求")
             route.abort("aborted")
             return
         if not self.is_homelogy(request_url):

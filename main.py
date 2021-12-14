@@ -1,6 +1,5 @@
 # coding: utf-8
 import _queue
-import time
 from urllib.parse import urlparse
 from queue import Queue
 
@@ -10,7 +9,11 @@ from core.elementer import ElementHandler
 from core.listener import ListerHandler
 from core.repeat import RepeatHandler
 from core.router import RouteHandler
-from settings import browser_configs, context_configs, context_init_js, context_default_timeout, page_init_js
+from settings import browser_configs, context_configs, context_init_js, context_default_timeout
+import utils.log
+
+logger = utils.log.setup_logger()
+
 
 class Mundo(ListerHandler, RouteHandler, ElementHandler):
     task_queue = Queue()
@@ -28,7 +31,7 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
         return self.context.new_page()
 
     def close_page(self, page):
-        print("***** 页面关闭 *****")
+        logger.info("***** 页面关闭 *****")
         page.close()
 
     def add_target(self, url):
@@ -39,33 +42,40 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
             for _url in url:
                 self.task_queue.put_nowait((url, ""))
 
+    def filter_repeat_page(self, url, request):
+        """
+        对url request 进行去重  避免 多次请求
+        """
+        if request:
+            if RepeatHandler.request_in(request.url, request.method):
+                logger.debug(f"request去重：{request.url}:{request.method}")
+                return True
+        else:
+            if RepeatHandler.request_in(url, "GET"):
+                logger.debug(f"url去重：{request.url}:GET")
+                return True
+
     def run(self):
         while True:
             try:
                 url, request = self.task_queue.get_nowait()
-                if request:
-                    if RepeatHandler.request_in(request.url, request.method):
-                        print("去重")
-                        continue
-                if RepeatHandler.request_in(url, "GET"):
-                    print("去重")
+                if self.filter_repeat_page(url, request):
                     continue
                 page = self.new_page()
 
                 if request != "" and request.method != "GET":
-                    print("------ 新的转发页面 -------")
+                    logger.info("------ 新的转发页面 -------")
                     self.forword_listener(page, request)
                     self.forword_route(page, request)
                     page.goto(request.url, wait_until="networkidle")
                 else:
-                    print("------ 新的请求页面 -------")
+                    logger.info("------ 新的请求页面 -------")
                     self.common_listener(page)
                     self.homelogy_route(page)  # 拒绝非同源的请求
                     page.goto(url, wait_until="networkidle")
                     self.remove_listener(page)
                     self.common_route(page)
                     self.analyze(page)
-                time.sleep(3)
                 self.close_page(page)
             except _queue.Empty as e:
                 break
@@ -76,13 +86,13 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
         self.context.close()
         self.browser.close()
         self.playwright.stop()
-        print("爬取结束")
+        logger.info("爬取结束")
         for url in RepeatHandler.request_cache:
             print(url)
 
 
 if __name__ == '__main__':
     mundo = Mundo()
-    url = "http://bh4ars.riskivy.xyz/Form/form_normal.php"
+    url = "http://10.0.83.6/login"
     mundo.add_target(url)
     mundo.run()

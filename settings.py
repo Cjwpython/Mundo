@@ -13,22 +13,11 @@ context_configs = {
     "ignore_https_errors": True
 }
 # 上下文请求默认超时时间
-context_default_timeout = 3000
+context_default_timeout = 30000
 
 context_init_js = [
     "'Object.defineProperties(navigator, {webdriver:{get:()=>undefined}});'",
 ]
 
-page_init_js = [
-    """
-    const list = document.querySelectorAll('*')
-list.forEach(item => {
-  if (item.getAttribute('style')) {
-    if (item.getAttribute('style').includes('position')) {
-      item.style.left = '1px'
-      item.style.top = '1px'
-    }
-  }
-})
-    """
-]
+# 日志等级
+logging_level = "DEBUG"

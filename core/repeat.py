@@ -1,6 +1,10 @@
 # coding: utf-8
 from urllib.parse import urljoin
 
+from utils.log import setup_logger
+
+logger = setup_logger(__name__)
+
 
 class RepeatHandler():
     """
@@ -18,7 +22,7 @@ class RepeatHandler():
         _str = f"{url}:{method}"
         if _str not in self.request_cache:
             self.request_cache.add(_str)
-            print(f">>>>>>request cache add {_str}<<<<<<<")
+            logger.debug(f">>>>>>request cache add {_str}<<<<<<<")
 
     @classmethod
     def request_remove(self, url, method):
