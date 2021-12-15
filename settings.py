@@ -20,4 +20,4 @@ context_init_js = [
 ]
 
 # 日志等级
-logging_level = "DEBUG"
+logging_level = "INFO"

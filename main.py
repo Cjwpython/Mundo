@@ -31,7 +31,7 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
         return self.context.new_page()
 
     def close_page(self, page):
-        logger.info("***** 页面关闭 *****")
+        logger.debug("***** 页面关闭 *****")
         page.close()
 
     def add_target(self, url):
@@ -64,12 +64,12 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
                 page = self.new_page()
 
                 if request != "" and request.method != "GET":
-                    logger.info("------ 新的转发页面 -------")
+                    logger.debug("------ 新的转发页面 -------")
                     self.forword_listener(page, request)
                     self.forword_route(page, request)
                     page.goto(request.url, wait_until="networkidle")
                 else:
-                    logger.info("------ 新的请求页面 -------")
+                    logger.debug("------ 新的请求页面 -------")
                     self.common_listener(page)
                     self.homelogy_route(page)  # 拒绝非同源的请求
                     page.goto(url, wait_until="networkidle")
@@ -93,6 +93,6 @@ class Mundo(ListerHandler, RouteHandler, ElementHandler):
 
 if __name__ == '__main__':
     mundo = Mundo()
-    url = "http://10.0.83.6/login"
+    url = "http://bh4ars.riskivy.xyz/Brute%20Force/index.php"
     mundo.add_target(url)
     mundo.run()

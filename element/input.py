@@ -44,7 +44,6 @@ class Inputer():
 
     def analyze_element(self):
         all_input = self.page.query_selector_all("input")
-        print(all_input)
         for input in all_input:
             type = input.get_attribute("type")
             if not type:

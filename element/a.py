@@ -40,7 +40,7 @@ def handle_a(page):
                 logger.debug("忽略邮件的超链接")
                 RepeatHandler.click_add(page, a)
                 continue
-        logger.info(f"开始点击:{text}")
+        logger.debug(f"开始点击:{text}")
         logger.debug_json(f"{text}的属性", {
             "is_hidden": a.is_hidden(),
             "is_visible": a.is_visible(),
@@ -50,11 +50,11 @@ def handle_a(page):
         })
 
         try:
-            a.hover()
+            # a.hover()
             # time.sleep(1)
-            # page.evaluate(t, a)  # js点击速度快
+            page.evaluate(t, a)  # js点击速度快
             # time.sleep(3)
-            a.click()  # 原生点击速度慢
+            # a.click()  # 原生点击速度慢
         except Exception as e:
             logger.error(f"元素点击失败:{text}")
         finally:

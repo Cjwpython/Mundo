@@ -12,11 +12,22 @@ def log_debug_json(self, msg='', data={}):
     if self.isEnabledFor(logging.DEBUG):
         if isinstance(data, dict):
             try:
-                self.debug('{} \n{}'.format(msg, json.dumps(data, indent=2)))
+                self.debug('{} \n{}'.format(msg, json.dumps(data, indent=4)))
             except TypeError:
                 self.debug('{} \n{}'.format(msg, data))
         else:
             self.debug('{} {}'.format(msg, data))
+
+
+def log_info_json(self, msg='', data={}):
+    if self.isEnabledFor(logging.INFO):
+        if isinstance(data, dict):
+            try:
+                self.info('{} \n{}'.format(msg, json.dumps(data, indent=4)))
+            except TypeError:
+                self.info('{} \n{}'.format(msg, data))
+        else:
+            self.info('{} {}'.format(msg, data))
 
 
 def setup_logger(name='Mundo'):
@@ -31,9 +42,10 @@ def setup_logger(name='Mundo'):
     logger.addHandler(console_handler)
 
     logger.debug_json = MethodType(log_debug_json, logger)
+    # logger.info_json = MethodType(log_info_json, logger)
     return logger
 
 
 if __name__ == '__main__':
     logger = setup_logger(__name__)
-    logger.json("a", {"a": 1})
+    logger.debug_json("a", {"a": 1})

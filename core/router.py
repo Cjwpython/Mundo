@@ -22,12 +22,12 @@ class RouteHandler():
     def common_handle(self, route, request):
         request_url = request.url
         if request.is_navigation_request():
-            logger.debug(f"请求将会在新的页面打开:{request_url}:{request.method}")
-            route.abort("aborted")
             if not self.is_homelogy(request_url):
                 logger.debug(f"丢弃非同源的url:{request_url}")
+                route.abort("aborted")
                 return
-            logger.info("放入队列中")
+            logger.debug(f"放入队列中，请求将会在新的页面打开:{request_url}:{request.method}")
+            route.abort("aborted")
             self.task_queue.put_nowait((request_url, request))
             return
         route.continue_()
