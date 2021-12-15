@@ -76,7 +76,7 @@ class ListerHandler():
             intercepted_fream.close()
             return
         logger.debug(f"新的页面打开:{url}")
-        self.task_queue.put_nowait(url)
+        self.task_queue.put_nowait((url, ""))
         intercepted_fream.close()
 
     def forword_listener(self, page, request):
