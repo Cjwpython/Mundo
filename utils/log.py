@@ -4,7 +4,7 @@ from types import MethodType
 
 from colorlog import ColoredFormatter
 
-from settings import logging_level
+from configs import ConfigController
 import json
 
 
@@ -35,9 +35,9 @@ def setup_logger(name='Mundo'):
     formatter = ColoredFormatter(LOGFORMAT)
 
     logger = logging.getLogger(name)
-    logger.setLevel(logging_level)
+    logger.setLevel(ConfigController.level)
     console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging_level)
+    console_handler.setLevel(ConfigController.level)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 

@@ -85,9 +85,3 @@ class RepeatHandler():
         if _str in self.click_cache:
             return True
         return False
-
-
-if __name__ == '__main__':
-    for i in range(10):
-        RepeatHandler.request_add(i)
-    print(RepeatHandler.request_cache)
