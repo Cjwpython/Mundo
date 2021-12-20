@@ -29,6 +29,6 @@ logging_configs = {
 
 # 静态资源配置
 static_configs = {
-    "repest": False,
+    "repeat": False,
     "suffix": ["css", "js", "jpg"]
 }

@@ -1,27 +1,30 @@
 # coding: utf-8
 from functools import partial
-from core.target import TargetHandler
+from core.target import TargetController
 from utils.log import setup_logger
 
 logger = setup_logger(__name__)
 from core.repeat import RepeatHandler
 
 
-class RouteHandler():
+class Router():
+    """
+    路由拦截器
+    """
 
     def common_route(self, page):
         page.route("**/*", partial(self.common_handle))
 
     def common_handle(self, route, request):
         request_url = request.url
+        if not TargetController.is_homelogy(request_url):
+            logger.debug(f"拒绝非同源的请求:{request_url}")
+            route.abort("aborted")
+            return
         if request.is_navigation_request():
-            if not TargetHandler.is_homelogy(request_url):
-                logger.debug(f"丢弃非同源的url:{request_url}")
-                route.abort("aborted")
-                return
             logger.debug(f"放入队列中，请求将会在新的页面打开:{request_url}:{request.method}")
             route.abort("aborted")
-            TargetHandler.task_queue.put_nowait((request_url, request))
+            TargetController.task_queue.put_nowait((request_url, request))
             return
         route.continue_()
 
@@ -30,11 +33,11 @@ class RouteHandler():
 
     def homelogy_handle(self, route, request):
         request_url = request.url
-        if RepeatHandler.request_in(request_url, request.method):
+        if not RepeatHandler.can_request(request_url, request.method):
             logger.debug("去除重复的请求")
             route.abort("aborted")
             return
-        if not TargetHandler.is_homelogy(request_url):
+        if not TargetController.is_homelogy(request_url):
             route.abort("aborted")
             # print(f"拒绝非同源的请求：{request.method} {request_url}")
             return

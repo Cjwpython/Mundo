@@ -4,16 +4,17 @@ from playwright.sync_api import sync_playwright
 
 from core.elementer import ElementHandler
 from core.listener import Listener
+from core.loginer import Loginer
 from core.repeat import RepeatHandler
-from core.router import RouteHandler
+from core.router import Router
 import utils.log
 from configs import ConfigController
-from core.target import TargetHandler
+from core.target import TargetController
 
 logger = utils.log.setup_logger()
 
 
-class Mundo(Listener, RouteHandler, ElementHandler):
+class Mundo(Listener, Router, ElementHandler, Loginer):
 
     def __init__(self):
         self.playwright = sync_playwright().start()
@@ -34,7 +35,7 @@ class Mundo(Listener, RouteHandler, ElementHandler):
         page.close()
 
     def add_target(self, target):
-        TargetHandler.add_target(target)
+        TargetController.add_target(target)
 
     def filter_repeat_page(self, url, request):
         """
@@ -52,7 +53,7 @@ class Mundo(Listener, RouteHandler, ElementHandler):
     def run(self):
         while True:
             try:
-                url, request = TargetHandler.task_queue.get_nowait()
+                url, request = TargetController.task_queue.get_nowait()
                 if self.filter_repeat_page(url, request):
                     continue
                 page = self.new_page()
@@ -79,6 +80,7 @@ class Mundo(Listener, RouteHandler, ElementHandler):
             except KeyboardInterrupt as e:
                 for url in RepeatHandler.request_cache:
                     print(url)
+                break
 
         self.context.close()
         self.browser.close()
@@ -90,6 +92,18 @@ class Mundo(Listener, RouteHandler, ElementHandler):
 
 if __name__ == '__main__':
     mundo = Mundo()
-    url = "https://demo.testfire.net"
-    mundo.add_target(url)
-    mundo.run()
+
+    login_configs = {
+        "login_url": "http://10.0.83.6/login",
+        "login_select_type": "custom",
+        "username_selector": "#username",
+        "password_selector": "#password",
+        "submit_selector": "#components-form-demo-normal-login > div:nth-child(3) > div > div > span > button",
+        "username_input": "admin",
+        "password_input": "123123",
+        "login_error_raise": False
+    }
+    mundo.login(login_configs)
+    # url = "https://demo.testfire.net"
+    # mundo.add_target(url)
+    # mundo.run()

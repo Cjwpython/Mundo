@@ -5,7 +5,10 @@ from urllib.parse import urlparse
 from configs import ConfigController
 
 
-class TargetHandler():
+class TargetController():
+    """
+    目标标记器
+    """
     base_target = ""
     task_queue = Queue()
 
@@ -24,3 +27,9 @@ class TargetHandler():
         if isinstance(target, list):
             for _url in target:
                 cls.task_queue.put_nowait((_url, ""))
+
+
+if __name__ == '__main__':
+    url = "http://10.0.81.9/123.css"
+    url_netloc = urlparse(url).path
+    print(url_netloc)

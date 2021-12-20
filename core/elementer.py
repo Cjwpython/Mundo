@@ -12,8 +12,8 @@ class ElementHandler():
         """
         解析元素
         """
-        logger.debug("开始解析input标签")
-        self.analyze_input(page)
+        # logger.debug("开始解析input标签")
+        # self.analyze_input(page)
         logger.debug("开始解析a标签")
         self.analyze_a(page)
 

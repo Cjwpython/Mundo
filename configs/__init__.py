@@ -3,10 +3,11 @@ from configs.browser import BrowserController
 from configs.context import ContextController
 from configs.logging import LoggingController
 from configs.page import PageController
+from configs.static import StaticConfigs
 from configs.task import TaskController
 
 
-class ConfigController(BrowserController, ContextController, PageController, LoggingController, TaskController):
+class ConfigController(BrowserController, ContextController, PageController, LoggingController, TaskController, StaticConfigs):
     @classmethod
     def dict(cls):
         return {
@@ -30,6 +31,10 @@ class ConfigController(BrowserController, ContextController, PageController, Log
             "task_configs": {
                 "task_id": cls.task_id,
                 "base_url": cls.base_url
+            },
+            "static_configs": {
+                "repeat": cls.static_repeat,
+                "suffix": cls.static_suffix
             }
         }
 

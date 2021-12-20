@@ -4,10 +4,13 @@ from functools import partial
 from utils.log import setup_logger
 
 logger = setup_logger(__name__)
-from core.target import TargetHandler
+from core.target import TargetController
 
 
 class Listener():
+    """
+    页面请求监听
+    """
 
     def common_listener(self, page):
         page.on("request", self.intercepted_request)
@@ -15,7 +18,6 @@ class Listener():
         page.on("requestfinished", self.intercepted_requestfinished)
         page.on("response", self.intercepted_response)
         page.on("popup", self.intercepted_popup)  # 打开了一个新的页面
-
 
     def remove_listener(self, page):
         page.remove_listener("request", self.intercepted_request)
@@ -34,7 +36,7 @@ class Listener():
 
     def intercepted_requestfailed(self, _intercepted_request):
         url = _intercepted_request.url
-        if not TargetHandler.is_homelogy(url):
+        if not TargetController.is_homelogy(url):
             return
         logger.info(f"请求失败:{_intercepted_request.method}:{url}")
         logger.debug_json("请求失败", {
@@ -51,7 +53,7 @@ class Listener():
     def intercepted_response(self, _intercepted_response):
         url = _intercepted_response.url
         status_code = _intercepted_response.status
-        if not TargetHandler.is_homelogy(url):
+        if not TargetController.is_homelogy(url):
             return
         # 当请求结束，这个url已经处理完成
         if status_code == 301:
@@ -75,13 +77,12 @@ class Listener():
 
     def intercepted_popup(self, intercepted_fream):
         url = intercepted_fream.url
-        if not TargetHandler.is_homelogy(url):
+        if not TargetController.is_homelogy(url):
             intercepted_fream.close()
             return
         logger.debug(f"新的页面打开:{url}")
-        TargetHandler.task_queue.put_nowait((url, ""))
+        TargetController.task_queue.put_nowait((url, ""))
         intercepted_fream.close()
-
 
     def forword_listener(self, page, request):
         page.on("request", partial(self.forword_request, request))
@@ -94,7 +95,7 @@ class Listener():
         is_navigation_request = real_request.is_navigation_request()
         method = real_request.method
         post_data = real_request.post_data
-        if not TargetHandler.is_homelogy(url):
+        if not TargetController.is_homelogy(url):
             return
         logger.debug(f"开始请求：M:{method} U:{url} PD:{post_data} INR:{is_navigation_request}")
 
