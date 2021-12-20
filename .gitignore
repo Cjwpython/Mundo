@@ -138,7 +138,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-test.py
+single.py
 .idea
 bin/Chromium.app/
 .DS_Store

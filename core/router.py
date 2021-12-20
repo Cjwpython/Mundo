@@ -39,7 +39,7 @@ class Router():
             return
         if not TargetController.is_homelogy(request_url):
             route.abort("aborted")
-            # print(f"拒绝非同源的请求：{request.method} {request_url}")
+            logger.debug(f"拒绝非同源的请求：{request.method} {request_url}")
             return
         route.continue_()
 
