@@ -42,7 +42,7 @@ def setup_logger(name='Mundo'):
     logger.addHandler(console_handler)
 
     logger.debug_json = MethodType(log_debug_json, logger)
-    # logger.info_json = MethodType(log_info_json, logger)
+    logger.info_json = MethodType(log_info_json, logger)
     return logger
 
 

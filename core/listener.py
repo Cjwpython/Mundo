@@ -44,7 +44,7 @@ class Listener():
         if RepeatHandler.request_in(url, method):  # 重复的请求不再打印
             return
         logger.info(f"请求失败:{_intercepted_request.method}:{url}")
-        logger.debug_json("请求失败", {
+        logger.info_json("请求失败", {
             "request": {
                 "method": _intercepted_request.method,
                 "url": url,
@@ -71,7 +71,7 @@ class Listener():
             # response_text = _intercepted_request.response().text()
             response_headers = _intercepted_request.response().headers
 
-        logger.debug_json("响应结束", {
+        logger.info_json("响应结束", {
             "request": {
                 "method": _intercepted_request.method,
                 "url": url,
